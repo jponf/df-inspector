@@ -161,3 +161,20 @@ class Lexer(metaclass=abc.ABCMeta):
 
     def raise_invalid_character(self):
         raise LexerException("Invalid character: {0}".format(self._ch))
+
+
+#
+##############################################################################
+
+class StrLexer(Lexer):
+
+    def __init__(self, str_input: str):
+        super().__init__()
+        self._input = str_input or " "
+        self._index = 0
+        self.current_character = self._input[self._index]
+
+    def consume(self):
+        self._index += 1
+        self.current_character = self._input[self._index] \
+            if self._index < len(self._input) else Lexer.EOF
