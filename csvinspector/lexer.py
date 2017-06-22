@@ -118,6 +118,8 @@ class Lexer(metaclass=abc.ABCMeta):
             else:
                 self.raise_invalid_character()
 
+        return TOKEN_EOF
+
     def parse_atom_or_number(self, buf):
         if self.is_number_sign():
             buf += self._ch
