@@ -2,7 +2,7 @@
 import unittest
 
 from csvinspector.lexer import LexerException, StrLexer, TOKEN_EOF,\
-    new_atom, new_integer, new_real
+    new_atom, new_integer, new_real, new_string
 
 
 #
@@ -22,6 +22,14 @@ class LexerText(unittest.TestCase):
 
     def test_one_real(self):
         self.assert_tokens("5.0", new_real("5.0"))
+
+    def test_one_string(self):
+        self.assert_tokens('"hello string"', new_string('hello string'))
+
+    def test_string_with_escaped_characters(self):
+        text = r'"This string escapes \"\\\""'
+        expected = r'This string escapes "\"'
+        self.assert_tokens(text, new_string(expected))
 
     def test_operand_assign(self):
         self.assert_tokens("=", new_atom("="))

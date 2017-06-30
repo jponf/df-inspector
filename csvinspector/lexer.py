@@ -16,16 +16,15 @@ class TokenType(enum.Enum):
     ATOM = 1
     REAL = 2
     INTEGER = 3
-    LPAREN = 4
-    RPAREN = 5
-    DQUOTE = 6
+    STRING = 4
+    LPAREN = 5
+    RPAREN = 6
     CLINE = 7
 
 
 TOKEN_EOF = Token(TokenType.EOF, "")
 TOKEN_LPAREN = Token(TokenType.LPAREN, "")
 TOKEN_RPAREN = Token(TokenType.RPAREN, "")
-TOKEN_DQUOTE = Token(TokenType.DQUOTE, "")
 TOKEN_CLINE = Token(TokenType.CLINE, "")
 
 
@@ -39,6 +38,10 @@ def new_integer(text: str) -> Token:
 
 def new_real(text: str) -> Token:
     return Token(TokenType.REAL, text)
+
+
+def new_string(text: str) -> Token:
+    return Token(TokenType.STRING, text)
 
 
 #
@@ -105,10 +108,10 @@ class Lexer(metaclass=abc.ABCMeta):
                 return TOKEN_LPAREN
             elif self._ch == ')':
                 return TOKEN_RPAREN
-            elif self._ch == '"':
-                return TOKEN_DQUOTE
             elif self._ch == '#':
                 return TOKEN_CLINE
+            elif self._ch == '"':
+                return self.parse_string()
             elif self.is_number_sign():
                 return self.parse_atom_or_number("")
             elif self.is_alpha() or self.is_operand():
@@ -119,6 +122,26 @@ class Lexer(metaclass=abc.ABCMeta):
                 self.raise_invalid_character()
 
         return TOKEN_EOF
+
+    def parse_string(self):
+        if self._ch != '"':
+            self.raise_expected_character('"')
+
+        self.consume()
+        buf, escape = "", False
+        while not self.is_eof() and (escape or self._ch != '"'):
+            if escape or self._ch != '\\':
+                buf += self._ch
+                escape = False
+            else:
+                escape = True
+            self.consume()
+
+        if self._ch == '"':
+            self.consume()
+            return new_string(buf)
+
+        self.raise_expected_character('"')
 
     def parse_atom_or_number(self, buf):
         if self.is_number_sign():
@@ -161,8 +184,12 @@ class Lexer(metaclass=abc.ABCMeta):
         while self.is_whitespace():
             self.consume()
 
+    def raise_expected_character(self, expected):
+        raise LexerException("Expected '{0}' but found '{1}'".format(
+            expected, "EOF" if self._ch is Lexer.EOF else self._ch))
+
     def raise_invalid_character(self):
-        raise LexerException("Invalid character: {0}".format(self._ch))
+        raise LexerException("Invalid character '{0}'".format(self._ch))
 
 
 #
