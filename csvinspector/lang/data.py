@@ -2,6 +2,7 @@
 
 
 import abc
+import typing
 
 from .exceptions import EvaluationException, \
     SymbolNotDefinedException
@@ -134,12 +135,21 @@ class ConsCell(SExpression):
     def __init__(self, car: SExpression, cdr: SExpression):
         assert isinstance(car, SExpression), "expected SExpression"
         assert isinstance(cdr, SExpression), "expected SExpression"
-        self.car = car
-        self.cdr = cdr
+        self._car = car
+        self._cdr = cdr
+
+    @property
+    def car(self) -> SExpression:
+        return self._car
+
+    @property
+    def cdr(self) -> SExpression:
+        return self._cdr
 
     def eval(self, env: Environment):
         if isinstance(self.car, CallableSExpression):
-            self.car.apply(env, self.car.evaluation_strategy(self.cdr))
+            cs_expr = typing.cast(CallableSExpression, self.car)
+            cs_expr.apply(env, cs_expr.evaluation_strategy(self.cdr))
         else:
             raise EvaluationException("Error evaluating {0}, which is not a"
                                       " callable s-expression")
@@ -163,3 +173,56 @@ class ConsCell(SExpression):
 
     def __str__(self):
         return "({0})".format(", ".join(map(str, self)))
+
+
+# Numbers
+##############################################################################
+
+class Integer(SExpression):
+
+    def __init__(self, value: int):
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    def eval(self, env: Environment) -> SExpression:
+        return self
+
+    def __eq__(self, other):
+        return isinstance(other, Integer) and self.value == other.value
+
+    def __hash__(self):
+        return hash(self._value)
+
+    def __repr__(self):
+        return "Integer({0})".format(self._value)
+
+    def __str__(self):
+        return str(self._value)
+
+
+class Real(SExpression):
+
+    def __init__(self, value: float):
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    def eval(self, env: Environment) -> SExpression:
+        return self
+
+    def __eq__(self, other):
+        return isinstance(other, Real) and self.value == other.value
+
+    def __hash__(self):
+        return hash(self._value)
+
+    def __repr__(self):
+        return "Integer({0})".format(self._value)
+
+    def __str__(self):
+        return str(self._value)

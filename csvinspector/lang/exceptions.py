@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
+class ParserException(Exception):
+    """Exception raised when the parser encounters an error."""
+
+
 class EvaluationException(Exception):
     """Exception raised when the language evaluation fails."""
 
