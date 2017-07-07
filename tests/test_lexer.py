@@ -1,7 +1,7 @@
 
 import unittest
 
-from csvinspector.lexer import LexerException, StrLexer, TOKEN_EOF,\
+from csvinspector.lang.lexer import LexerException, StrLexer, TOKEN_EOF, \
     new_atom, new_integer, new_real, new_string
 
 
