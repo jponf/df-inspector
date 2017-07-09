@@ -105,10 +105,13 @@ class Lexer(metaclass=abc.ABCMeta):
             if self._ch.isspace():
                 self.skip_whitespace()
             elif self._ch == '(':
+                self.consume()
                 return TOKEN_LPAREN
             elif self._ch == ')':
+                self.consume()
                 return TOKEN_RPAREN
             elif self._ch == '#':
+                self.consume()
                 return TOKEN_CLINE
             elif self._ch == '"':
                 return self.parse_string()

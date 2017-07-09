@@ -133,10 +133,15 @@ SYM_NIL = Symbol('nil')
 class ConsCell(SExpression):
 
     @staticmethod
+    def from_args(*args: [SExpression]):
+        return ConsCell.from_list(args)
+
+    @staticmethod
     def from_list(elements: [SExpression]):
         head = SYM_NIL
         for e in reversed(elements):
             head = ConsCell(e, head)
+        return head
 
     def __init__(self, car: SExpression, cdr: SExpression):
         assert isinstance(car, SExpression), "expected SExpression"

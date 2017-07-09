@@ -15,7 +15,7 @@ class Parser(object):
         self._lookahead = None
         self._consume()
 
-    def symbolic_expr(self) -> SExpression:
+    def parse_next(self) -> SExpression:
         if self._lookahead.type is TokenType.ATOM:
             return self._atom()
         elif self._lookahead.type is TokenType.REAL:
@@ -50,7 +50,7 @@ class Parser(object):
         elements = []
         self._match_and_consume(TokenType.LPAREN)
         while self._lookahead.type != TokenType.RPAREN:
-            elements.append(self.symbolic_expr())
+            elements.append(self.parse_next())
         self._match_and_consume(TokenType.RPAREN)
         return ConsCell.from_list(elements)
 
