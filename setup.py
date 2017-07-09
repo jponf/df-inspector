@@ -60,7 +60,7 @@ setup(
     platforms='any',
     zip_safe=True,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'Intended Audience :: End Users/Desktop',
