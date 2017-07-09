@@ -237,3 +237,31 @@ class Real(SExpression):
 
     def __str__(self):
         return str(self._value)
+
+
+#
+##############################################################################
+
+class String(SExpression):
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def value(self):
+        return self._value
+
+    def eval(self, env: Environment) -> SExpression:
+        return self
+
+    def __eq__(self, other):
+        return isinstance(other, String) and self.value == other.value
+
+    def __hash__(self):
+        return hash(self._value)
+
+    def __repr__(self):
+        return "String({0})".format(self._value)
+
+    def __str__(self):
+        return str(self._value)

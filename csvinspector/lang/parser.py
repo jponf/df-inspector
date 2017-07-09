@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .exceptions import ParserException
-from .data import ConsCell, Integer, Real, Symbol, SExpression
+from .data import ConsCell, Integer, Real, String, Symbol, SExpression
 from .lexer import Lexer, TokenType
 
 
@@ -22,6 +22,8 @@ class Parser(object):
             return self._real()
         elif self._lookahead.type is TokenType.INTEGER:
             return self._integer()
+        elif self._lookahead.type is TokenType.STRING:
+            return self._string()
         elif self._lookahead.type is TokenType.LPAREN:
             return self._list()
 
@@ -43,6 +45,12 @@ class Parser(object):
     def _integer(self) -> Integer:
         self._match(TokenType.INTEGER)
         s_expr = Integer(int(self._lookahead.text))
+        self._consume()
+        return s_expr
+
+    def _string(self) -> String:
+        self._match(TokenType.STRING)
+        s_expr = String(self._lookahead.text)
         self._consume()
         return s_expr
 

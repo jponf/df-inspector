@@ -2,7 +2,7 @@
 
 import unittest
 
-from csvinspector.lang.data import ConsCell, Symbol, Integer, Real
+from csvinspector.lang.data import ConsCell, Symbol, Integer, Real, String
 from csvinspector.lang.lexer import StrLexer
 from csvinspector.lang.parser import Parser
 
@@ -43,6 +43,18 @@ class TestParser(unittest.TestCase):
     def test_read_one_real_with_spaces(self):
         s_expr = Parser(StrLexer("    12.34  ")).parse_next()
         self.assertEqual(s_expr, REAL)
+
+    def test_read_one_string(self):
+        s_expr = Parser(StrLexer('"hello"')).parse_next()
+        self.assertEqual(s_expr, String("hello"))
+
+    def test_read_one_string_with_escaped_characters(self):
+        s_expr = Parser(StrLexer(r'"hello \"me\""')).parse_next()
+        self.assertEqual(s_expr, String('hello "me"'))
+
+    def test_read_one_string_with_spaces(self):
+        s_expr = Parser(StrLexer('  "hello"   ')).parse_next()
+        self.assertEqual(s_expr, String("hello"))
 
     def test_read_simple_list(self):
         s_expr = Parser(StrLexer("    (1234 SYMBOL)")).parse_next()
