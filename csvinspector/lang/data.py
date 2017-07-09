@@ -2,6 +2,7 @@
 
 
 import abc
+import pandas as pd
 import typing
 
 from .exceptions import EvaluationException, \
@@ -21,13 +22,12 @@ class SExpression(metaclass=abc.ABCMeta):
 
 class CallableSExpression(SExpression):
 
-    @property
     @abc.abstractmethod
-    def evaluation_strategy(self):
+    def process_arguments(self, env: 'Environment') -> SExpression:
         raise NotImplementedError("Abstract property")
 
     @abc.abstractclassmethod
-    def apply(self, env: 'Environment', args: 'SExpression'):
+    def apply(self, env: 'Environment', args: SExpression) -> SExpression:
         raise NotImplementedError("Abstract method")
 
 
@@ -100,6 +100,18 @@ class NullEnvironment(Environment):
         raise NotImplementedError("NullEnvironment is not extensible")
 
 
+# Function
+##############################################################################
+
+class Function(CallableSExpression):
+
+    def process_arguments(self, env: Environment) -> SExpression:
+        raise NotImplementedError("TODO")
+
+    def eval(self, env: Environment) -> SExpression:
+        return self
+
+
 # Symbol
 ##############################################################################
 
@@ -125,6 +137,8 @@ class Symbol(SExpression):
 
 
 SYM_NIL = Symbol('nil')
+SYM_TRUE = Symbol('true')
+SYM_FALSE = Symbol('false')
 
 
 # ConsCell
@@ -160,7 +174,7 @@ class ConsCell(SExpression):
     def eval(self, env: Environment):
         if isinstance(self.car, CallableSExpression):
             cs_expr = typing.cast(CallableSExpression, self.car)
-            cs_expr.apply(env, cs_expr.evaluation_strategy(self.cdr))
+            cs_expr.apply(env, cs_expr.process_arguments(env, self.cdr))
         else:
             raise EvaluationException("Error evaluating {0}, which is not a"
                                       " callable s-expression")
@@ -239,7 +253,7 @@ class Real(SExpression):
         return str(self._value)
 
 
-#
+# String
 ##############################################################################
 
 class String(SExpression):
@@ -265,3 +279,31 @@ class String(SExpression):
 
     def __str__(self):
         return str(self._value)
+
+
+# DataFrame
+##############################################################################
+
+class DataFrame(SExpression):
+
+    def __init__(self, df: pd.DataFrame):
+        self._df = df
+
+    @property
+    def data_frame(self):
+        return self._df
+
+    def eval(self, env: Environment) -> SExpression:
+        return self
+
+    def __eq__(self, other):
+        return isinstance(other, DataFrame) and self._df == other.data_frame
+
+    def __hash__(self):
+        return hash(self._df)
+
+    def __repr__(self):
+        return repr(self._df)
+
+    def __str__(self):
+        return str(self._df)
