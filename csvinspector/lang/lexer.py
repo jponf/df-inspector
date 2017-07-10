@@ -4,6 +4,8 @@ import abc
 import collections
 import enum
 
+from .exceptions import LexerException
+
 
 #
 ##############################################################################
@@ -49,10 +51,6 @@ def new_string(text: str) -> Token:
 
 _NUM_SIGNS = frozenset(['-', '+'])
 _OPERANDS = frozenset(['='])
-
-
-class LexerException(Exception):
-    """Raised when you type text that makes no sense!"""
 
 
 class Lexer(metaclass=abc.ABCMeta):

@@ -5,7 +5,7 @@ import argparse
 import logging
 import sys
 
-from . import VERSION_BRANCH, VERSION_STR, primitives
+from csvinspector import VERSION_BRANCH, VERSION_STR, repl
 
 
 #
@@ -18,6 +18,8 @@ LOGGING_LEVELS = {
     'debug': logging.DEBUG
 }
 
+DEFAULT_LOGGING_LEVEL = 'error'
+
 
 #
 ##############################################################################
@@ -25,6 +27,7 @@ LOGGING_LEVELS = {
 def main():
     args = parse_command_line_args(sys.argv[1:])
     set_up_logging(args)
+    repl.run()
 
 
 # Setup
@@ -51,6 +54,10 @@ def parse_command_line_args(args):
     parser.add_argument('--version', action='version',
                         version="%(prog)s {0} {1}".format(
                             VERSION_STR, VERSION_BRANCH))
+
+    parser.add_argument('-v', '--verbosity', action='store',
+                        choices=LOGGING_LEVELS.keys(),
+                        default=DEFAULT_LOGGING_LEVEL)
 
     return parser.parse_args(args)
 

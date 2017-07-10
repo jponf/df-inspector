@@ -53,10 +53,35 @@ class Environment(metaclass=abc.ABCMeta):
 # Nested && Null Environments
 ##############################################################################
 
+class NullEnvironment(Environment):
+    """Null pattern applied to evaluation environments.
+
+    If no parent environment is defined, it must automatically be
+    NullEnvironment, which always fails on find(...) and its globalBind(...)
+    refers to its child bind(...).
+    """
+
+    def __init__(self, child_env: Environment):
+        self._child_env = child_env
+
+    def bind(self, symbol: 'Symbol', value: SExpression) -> None:
+        raise NotImplementedError("NullEnvironment cannot bint symbols")
+
+    def bind_global(self, symbol: 'Symbol', value: SExpression) -> None:
+        return self._child_env.bind(symbol, value)
+
+    def find(self, symbol: 'Symbol') -> SExpression:
+        raise SymbolNotDefinedException(
+            "Symbol {0} is not defined".format(symbol))
+
+    def extend(self) -> Environment:
+        raise NotImplementedError("NullEnvironment is not extensible")
+
+
 class NestedEnvironment(Environment):
 
-    def __init__(self, parent_env: Environment):
-        self._parent_env = parent_env
+    def __init__(self, parent_env: Environment=None):
+        self._parent_env = parent_env or NullEnvironment(self)
         self._mapped_symbols = {}
 
     def bind(self, symbol: 'Symbol', value: SExpression) -> None:
@@ -73,31 +98,6 @@ class NestedEnvironment(Environment):
 
     def extend(self) -> Environment:
         return NestedEnvironment(self)
-
-
-class NullEnvironment(Environment):
-    """Null pattern applied to evaluation environments.
-
-    If no parent environment is defined, it must automatically be
-    NullEnvironment, which always fails on find(...) and its globalBind(...)
-    refers to its child bind(...).
-    """
-
-    def __init__(self, nested_env: NestedEnvironment):
-        self._nested_env = nested_env
-
-    def bind(self, symbol: 'Symbol', value: SExpression) -> None:
-        raise NotImplementedError("NullEnvironment cannot bint symbols")
-
-    def bind_global(self, symbol: 'Symbol', value: SExpression) -> None:
-        return self._nested_env.bind(symbol, value)
-
-    def find(self, symbol: 'Symbol') -> SExpression:
-        raise SymbolNotDefinedException(
-            "Symbol {0} is not defined".format(symbol))
-
-    def extend(self) -> Environment:
-        raise NotImplementedError("NullEnvironment is not extensible")
 
 
 # Function
@@ -176,8 +176,9 @@ class ConsCell(SExpression):
             cs_expr = typing.cast(CallableSExpression, self.car)
             cs_expr.apply(env, cs_expr.process_arguments(env, self.cdr))
         else:
-            raise EvaluationException("Error evaluating {0}, which is not a"
-                                      " callable s-expression")
+            raise EvaluationException(
+                "Error evaluating '{0}', which is not a callable "
+                "s-expression".format(self.car))
 
     def __eq__(self, other):
         return isinstance(other, ConsCell) and self.car == other.car \
