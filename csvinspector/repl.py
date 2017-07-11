@@ -5,8 +5,9 @@ import logging
 from . import primitives
 from .lang.exceptions import EvaluationException
 from .lang.environment import Environment, NestedEnvironment
-from .lang.parser import Parser, ParserException
 from .lang.lexer import StrLexer, LexerException
+from .lang.parser import Parser, ParserException
+from .lang.symbol import SYM_NIL
 
 
 #
@@ -33,7 +34,8 @@ def run(env: Environment=NestedEnvironment()):
             p = Parser(StrLexer(input_str))
             s_expr = p.parse_next()
             result = s_expr.eval(env)
-            print(">>>>>", result)
+            if SYM_NIL != result:
+                print(">>>>>", result)
         except (EvaluationException, LexerException, ParserException) as e:
             print("~~~~~", e)
 
@@ -66,6 +68,9 @@ def read_input():
         return buf.strip()
     except KeyboardInterrupt:
         _log.info("Captured interruption, submitting command '%s'", EXIT_CMD)
+        return EXIT_CMD
+    except EOFError:
+        _log.info("EOF found, submitting command '%s'", EXIT_CMD)
         return EXIT_CMD
 
 

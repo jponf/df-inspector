@@ -50,7 +50,7 @@ def new_string(text: str) -> Token:
 ##############################################################################
 
 _NUM_SIGNS = frozenset(['-', '+'])
-_OPERANDS = frozenset(['=', '+', '-', '*', '/', '^'])
+OPERANDS = frozenset(['=', '+', '-', '*', '/', '^'])
 
 
 class Lexer(metaclass=abc.ABCMeta):
@@ -93,7 +93,7 @@ class Lexer(metaclass=abc.ABCMeta):
         return not self.is_eof() and self._ch == '.'
 
     def is_operand(self):
-        return self._ch in _OPERANDS
+        return self._ch in OPERANDS
 
     def is_number_sign(self):
         return self._ch in _NUM_SIGNS

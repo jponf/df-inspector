@@ -8,10 +8,17 @@ from .symbol import SYM_NIL
 from .types import ConsCell
 
 
-# Function
+#
 ##############################################################################
 
 class Function(CallableSExpression):
+
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
 
     def process_arguments(self, args: SExpression,
                           env: Environment) -> SExpression:
@@ -27,3 +34,26 @@ class Function(CallableSExpression):
 
     def eval(self, env: Environment) -> SExpression:
         return self
+
+    def __str__(self):
+        return "<function {0}>".format(self._name)
+
+
+class Special(CallableSExpression):
+
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    def process_arguments(self, args: SExpression,
+                          env: 'Environment') -> SExpression:
+        return args
+
+    def eval(self, env: Environment) -> SExpression:
+        return self
+
+    def __str__(self):
+        return "<special {0}>".format(self._name)
