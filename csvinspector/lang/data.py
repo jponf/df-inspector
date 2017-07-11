@@ -204,10 +204,18 @@ class ConsCell(SExpression):
 # Numbers
 ##############################################################################
 
-class Integer(SExpression):
+class BaseNumber(metaclass=abc.ABCMeta):
+
+    @property
+    @abc.abstractclassmethod
+    def value(self):
+        raise NotImplementedError("Abstract property")
+
+
+class Integer(BaseNumber, SExpression):
 
     def __init__(self, value: int):
-        self._value = value
+        self._value = int(value)
 
     @property
     def value(self):
@@ -229,10 +237,10 @@ class Integer(SExpression):
         return str(self._value)
 
 
-class Real(SExpression):
+class Real(BaseNumber, SExpression):
 
     def __init__(self, value: float):
-        self._value = value
+        self._value = float(value)
 
     @property
     def value(self):
