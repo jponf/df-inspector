@@ -118,9 +118,10 @@ class ConsCell(SExpression):
         return self._cdr
 
     def eval(self, env: Environment):
-        if isinstance(self.car, CallableSExpression):
-            cs_expr = typing.cast(CallableSExpression, self.car)
-            cs_expr.apply(cs_expr.process_arguments(env, self.cdr), env)
+        car_eval = self._car.eval(env)
+        if isinstance(car_eval, CallableSExpression):
+            cs_expr = typing.cast(CallableSExpression, car_eval)
+            return cs_expr.apply(cs_expr.process_arguments(self.cdr, env), env)
         else:
             raise EvaluationException(
                 "Error evaluating '{0}', which is not a callable "

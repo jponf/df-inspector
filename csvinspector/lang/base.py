@@ -17,8 +17,8 @@ class SExpression(metaclass=abc.ABCMeta):
 class CallableSExpression(SExpression):
 
     @abc.abstractmethod
-    def process_arguments(self, env: 'Environment',
-                          args: SExpression) -> SExpression:
+    def process_arguments(self, args: SExpression,
+                          env: 'Environment') -> SExpression:
         raise NotImplementedError("Abstract property")
 
     @abc.abstractclassmethod

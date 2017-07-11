@@ -4,7 +4,7 @@ import logging
 
 from . import primitives
 from .lang.exceptions import EvaluationException
-from .lang.data import Environment, NestedEnvironment
+from .lang.environment import Environment, NestedEnvironment
 from .lang.parser import Parser, ParserException
 from .lang.lexer import StrLexer, LexerException
 

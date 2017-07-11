@@ -28,6 +28,3 @@ def iterate(s_expr_list: SExpression):
         cc_index = typing.cast(ConsCell, index)
         index = cc_index.cdr
         yield cc_index.car
-
-
-
