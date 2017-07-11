@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from . import listops
 from .exceptions import ParserException
-from .data import ConsCell, Integer, Real, String, Symbol, SExpression
 from .lexer import Lexer, TokenType
+from .symbol import Symbol
+from .types import ConsCell, Integer, Real, String, SExpression
 
 
 #
@@ -60,7 +62,7 @@ class Parser(object):
         while self._lookahead.type != TokenType.RPAREN:
             elements.append(self.parse_next())
         self._match_and_consume(TokenType.RPAREN)
-        return ConsCell.from_list(elements)
+        return listops.from_list(elements)
 
     def _consume(self) -> None:
         self._lookahead = self._lexer.next_token()

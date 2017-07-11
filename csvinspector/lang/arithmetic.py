@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from .data import BaseNumber, Integer, Real
+from .types import BaseNumber, Integer, Real
+
 
 #
 ##############################################################################
