@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
 from csvinspector.lang import listops
 from csvinspector.lang.environment import NestedEnvironment
+from csvinspector.lang.exceptions import EvaluationException
 from csvinspector.lang.symbol import SYM_NIL
 from csvinspector.lang.types import Integer, Real
 from csvinspector.primitives import FunctionAdd, FunctionSubtract, \
@@ -99,10 +102,10 @@ class TestFunctionDivide(unittest.TestCase):
         result = self.f_divide.apply(SYM_NIL, self.env)
         self.assertEqual(result, Integer(1))
 
-    @unittest.expectedFailure
     def test_division_by_0(self):
         op = listops.from_list([Integer(10), Integer(0)])
-        self.f_divide.apply(op, self.env)
+        with self.assertRaises(EvaluationException):
+            self.f_divide.apply(op, self.env)
 
     def test_exact_integer_division(self):
         op = listops.from_list([Integer(10), Integer(2)])
