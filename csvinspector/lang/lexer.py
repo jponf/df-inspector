@@ -50,7 +50,7 @@ def new_string(text: str) -> Token:
 ##############################################################################
 
 _NUM_SIGNS = frozenset(['-', '+'])
-OPERANDS = frozenset(['=', '+', '-', '*', '/', '^'])
+OPERANDS = frozenset(['=', '+', '-', '*', '/', '^', '.'])
 
 
 class Lexer(metaclass=abc.ABCMeta):
@@ -159,7 +159,7 @@ class Lexer(metaclass=abc.ABCMeta):
             buf += self._ch
             self.consume()
 
-        while self.is_alnum():
+        while self.is_alnum() or self._ch == '_':
             buf += self._ch
             self.consume()
 

@@ -15,3 +15,8 @@ class EvaluationException(Exception):
 
 class SymbolNotDefinedException(EvaluationException):
     """Exception raised when a symbol has not been defined."""
+
+
+class ArgumentsException(EvaluationException):
+    """Exception raised when there is a problem with the arguments
+    of a function."""

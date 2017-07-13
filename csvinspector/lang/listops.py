@@ -30,7 +30,7 @@ def iterate(s_expr_list: SExpression):
         yield cc_index.car
 
 
-def len(s_expr_list: SExpression) -> int:
+def length(s_expr_list: SExpression) -> int:
     l = 0
     for _ in iterate(s_expr_list):
         l += 1
@@ -43,3 +43,10 @@ def nth(s_expr_list: SExpression, pos: int) -> SExpression:
         cur = cur.cdr
         pos -= 1
     return cur.car
+
+
+def is_list_of(s_expr_list: SExpression, klass: type) -> bool:
+    for car in iterate(s_expr_list):
+        if not isinstance(car, klass):
+            return False
+    return True

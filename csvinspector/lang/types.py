@@ -153,6 +153,10 @@ class ConsCell(SExpression):
 
 class DataFrame(SExpression):
 
+    @staticmethod
+    def from_csv_file(file_path: str):
+        return DataFrame(pd.read_csv(file_path))
+
     def __init__(self, df: pd.DataFrame):
         self._df = df
 
