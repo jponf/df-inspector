@@ -2,7 +2,7 @@
 
 import logging
 
-from . import primitives
+from . import primitives, VERSION_STR
 from .lang.exceptions import EvaluationException
 from .lang.environment import Environment, NestedEnvironment
 from .lang.lexer import StrLexer, LexerException
@@ -13,7 +13,9 @@ from .lang.symbol import SYM_NIL
 #
 ##############################################################################
 
+HELP_CMD = ":help"
 EXIT_CMD = ":exit"
+VERSION_CMD = ":version"
 
 _log = logging.getLogger('repl')
 
@@ -29,17 +31,22 @@ def run(env: Environment=NestedEnvironment()):
         input_str = read_input()
         if EXIT_CMD == input_str:
             break
+        elif HELP_CMD == input_str:
+            show_help()
+        elif VERSION_CMD == input_str:
+            print(VERSION_STR)
+        else:
+            try:
+                p = Parser(StrLexer(input_str))
+                s_expr = p.parse_next()
+                result = s_expr.eval(env)
+                if SYM_NIL != result:
+                    print(">>>>>", result)
+            except (EvaluationException, LexerException,
+                    ParserException) as e:
+                print("~~~~~", e)
 
-        try:
-            p = Parser(StrLexer(input_str))
-            s_expr = p.parse_next()
-            result = s_expr.eval(env)
-            if SYM_NIL != result:
-                print(">>>>>", result)
-        except (EvaluationException, LexerException, ParserException) as e:
-            print("~~~~~", e)
-
-    print("Bye!")
+    print("Exiting... Bye!")
 
 
 def show_banner():
@@ -49,8 +56,12 @@ def show_banner():
     print("Type the expression to evaluate:")
     print("\t* interpet waits for parentheses to balance")
     print("\t* or for an empty line")
-    print("\t* type: :exit to exit the REPL")
+    print("\t* type :exit to exit the REPL")
     print("")
+
+
+def show_help():
+    print("TODO")
 
 
 def read_input():
