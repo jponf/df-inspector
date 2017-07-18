@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import readline  # TODO: Check if it works on Mac and Windows
 
 from . import primitives, VERSION_STR
 from .lang.base import SExpression
@@ -29,6 +30,8 @@ def run_repl(env: Environment=NestedEnvironment()):
     show_banner()
     primitives.load_all(env)
 
+    # TODO: Completion of language words
+    readline.parse_and_bind('tab: complete')
     while True:
         input_str = read_input()
         if EXIT_CMD == input_str:
