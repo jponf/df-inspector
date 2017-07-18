@@ -17,6 +17,9 @@ class Parser(object):
         self._lookahead = None
         self._consume()
 
+    def has_next(self):
+        return self._lookahead.type is not TokenType.EOF
+
     def parse_next(self) -> SExpression:
         if self._lookahead.type is TokenType.ATOM:
             return self._atom()

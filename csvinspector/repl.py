@@ -58,19 +58,24 @@ def show_banner():
 
 
 def show_help():
-    print("TODO")
+    print("This interpreter uses a lisp like syntax, some expressions you")
+    print(" play with to get used to it are:")
+    print("\t* Arithmetic operations:")
+    print("\t  (+ 3 5), (* 5 -9), (/ 2 5.0), ...")
+    print("\t* Bind values to names:")
+    print("\t  (let a 3) (let b 5) (+ a b)")
 
 
 def read_input():
     try:
         line = input("> ")
         parentheses_balance = compute_parentheses_balance(line)
-        buf = line + '\n'
+        buf = line
 
         while line and parentheses_balance != 0:
-            buf += line
             buf += '\n'
             line = input("# ")
+            buf += line
             parentheses_balance += compute_parentheses_balance(line)
 
         return buf.strip()
@@ -96,8 +101,10 @@ def process_input(text: str, env: Environment, show_result: bool) \
         -> SExpression or None:
     try:
         p = Parser(StrLexer(text))
-        s_expr = p.parse_next()
-        result = s_expr.eval(env)
+        result = SYM_NIL
+        while p.has_next():
+            s_expr = p.parse_next()
+            result = s_expr.eval(env)
         if show_result and SYM_NIL != result:
             print(">>>>>", result)
         return result

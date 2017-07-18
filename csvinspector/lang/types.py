@@ -116,8 +116,8 @@ class String(SExpression):
 class ConsCell(SExpression):
 
     def __init__(self, car: SExpression, cdr: SExpression):
-        assert isinstance(car, SExpression), "expected SExpression"
-        assert isinstance(cdr, SExpression), "expected SExpression"
+        #assert isinstance(car, SExpression), "expected SExpression"
+        #assert isinstance(cdr, SExpression), "expected SExpression"
         self._car = car
         self._cdr = cdr
 
@@ -153,10 +153,10 @@ class ConsCell(SExpression):
         return 31 * hash(self.car) + hash(self.cdr)
 
     def __iter__(self):
-        s_expr = self.car
-        while s_expr != SYM_NIL:
-            yield s_expr
-            s_expr = self.cdr
+        cons_cell = self
+        while cons_cell != SYM_NIL:
+            yield cons_cell.car
+            cons_cell = cons_cell.cdr
 
     def __repr__(self):
         return "ConsCell(car={0}, cdr={1})".format(repr(self.car),
