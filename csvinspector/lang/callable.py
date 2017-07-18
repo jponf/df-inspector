@@ -20,6 +20,10 @@ class Function(CallableSExpression):
     def name(self):
         return self._name
 
+    @property
+    def info(self):
+        return "Generic function information - Name: {0}".format(self._name)
+
     def process_arguments(self, args: SExpression,
                           env: Environment) -> SExpression:
         if SYM_NIL == args:
@@ -43,6 +47,11 @@ class Special(CallableSExpression):
 
     def __init__(self, name):
         self._name = name
+
+    @property
+    def info(self):
+        return "Generic specials form information - Name: {0}".format(
+            self._name)
 
     @property
     def name(self):

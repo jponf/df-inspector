@@ -26,6 +26,10 @@ class Integer(BaseNumber, SExpression):
         self._value = int(value)
 
     @property
+    def info(self) -> str:
+        return "Integer expression with value {0}".format(self._value)
+
+    @property
     def value(self):
         return self._value
 
@@ -49,6 +53,10 @@ class Real(BaseNumber, SExpression):
 
     def __init__(self, value: float):
         self._value = float(value)
+
+    @property
+    def info(self) -> str:
+        return "Real expression with value {0}".format(self._value)
 
     @property
     def value(self):
@@ -77,6 +85,10 @@ class String(SExpression):
 
     def __init__(self, value: str):
         self._value = value
+
+    @property
+    def info(self) -> str:
+        return 'String expression: "{0}"'.format(self._value)
 
     @property
     def value(self):
@@ -108,6 +120,12 @@ class ConsCell(SExpression):
         assert isinstance(cdr, SExpression), "expected SExpression"
         self._car = car
         self._cdr = cdr
+
+    @property
+    def info(self) -> str:
+        return "ConsCell expression with value {0} that it is {1} the end" \
+               " of a list".format(self._car,
+                                   "" if self._cdr is SYM_NIL else "not")
 
     @property
     def car(self) -> SExpression:
@@ -156,6 +174,10 @@ class DataFrame(SExpression):
     @staticmethod
     def from_csv_file(file_path: str):
         return DataFrame(pd.read_csv(file_path))
+
+    @property
+    def info(self):
+        return "Expression that is a binding to a Pandas DataFrame object"
 
     def __init__(self, df: pd.DataFrame):
         self._df = df

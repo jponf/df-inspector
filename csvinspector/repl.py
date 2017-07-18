@@ -3,6 +3,7 @@
 import logging
 
 from . import primitives, VERSION_STR
+from .lang.base import SExpression
 from .lang.exceptions import EvaluationException
 from .lang.environment import Environment, NestedEnvironment
 from .lang.lexer import StrLexer, LexerException
@@ -13,8 +14,9 @@ from .lang.symbol import SYM_NIL
 #
 ##############################################################################
 
-HELP_CMD = ":help"
 EXIT_CMD = ":exit"
+HELP_CMD = ":help"
+INFO_CMD = ":info"
 VERSION_CMD = ":version"
 
 _log = logging.getLogger('repl')
@@ -33,18 +35,12 @@ def run(env: Environment=NestedEnvironment()):
             break
         elif HELP_CMD == input_str:
             show_help()
+        elif input_str.startswith(INFO_CMD):
+            process_input_and_show_info(input_str[len(INFO_CMD):], env)
         elif VERSION_CMD == input_str:
             print(VERSION_STR)
         else:
-            try:
-                p = Parser(StrLexer(input_str))
-                s_expr = p.parse_next()
-                result = s_expr.eval(env)
-                if SYM_NIL != result:
-                    print(">>>>>", result)
-            except (EvaluationException, LexerException,
-                    ParserException) as e:
-                print("~~~~~", e)
+            process_input(input_str, env, show_result=True)
 
     print("Exiting... Bye!")
 
@@ -54,9 +50,9 @@ def show_banner():
     print("language")
     print("")
     print("Type the expression to evaluate:")
-    print("\t* interpet waits for parentheses to balance")
-    print("\t* or for an empty line")
-    print("\t* type :exit to exit the REPL")
+    print("\t* waits for parentheses to balance or an empty line")
+    print("\t* type {0} to exit the REPL".format(EXIT_CMD))
+    print("\t* type {0}")
     print("")
 
 
@@ -93,3 +89,25 @@ def compute_parentheses_balance(text: str):
         elif c == ')':
             balance -= 1
     return balance
+
+
+def process_input(text: str, env: Environment, show_result: bool) \
+        -> SExpression or None:
+    try:
+        p = Parser(StrLexer(text))
+        s_expr = p.parse_next()
+        result = s_expr.eval(env)
+        if show_result and SYM_NIL != result:
+            print(">>>>>", result)
+        return result
+    except (EvaluationException, LexerException,
+            ParserException) as e:
+        print("~~~~~", e)
+
+    return None
+
+
+def process_input_and_show_info(text: str, env: Environment):
+    r = process_input(text, env, show_result=False)
+    if r is not None:
+        print(r.info)

@@ -9,7 +9,17 @@ import abc
 
 class SExpression(metaclass=abc.ABCMeta):
 
-    @abc.abstractclassmethod
+    @property
+    @abc.abstractmethod
+    def info(self) -> str:
+        """String that explains what the s-expression is:
+            * how it behaves
+            * what is its value
+            * ...
+        """
+        raise NotImplementedError("Abstract property")
+
+    @abc.abstractmethod
     def eval(self, env: 'Environment') -> 'SExpression':
         raise NotImplementedError("Abstract method")
 

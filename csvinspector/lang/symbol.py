@@ -11,6 +11,10 @@ class Symbol(SExpression):
     def __init__(self, name: str):
         self.name = name
 
+    @property
+    def info(self) -> str:
+        return "Symbol for {0}".format(self.name)
+
     def eval(self, env: Environment):
         return env.find(self)
 
