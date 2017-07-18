@@ -25,7 +25,7 @@ _log = logging.getLogger('repl')
 #
 ##############################################################################
 
-def run(env: Environment=NestedEnvironment()):
+def run_repl(env: Environment=NestedEnvironment()):
     show_banner()
     primitives.load_all(env)
 
@@ -52,7 +52,8 @@ def show_banner():
     print("Type the expression to evaluate:")
     print("\t* waits for parentheses to balance or an empty line")
     print("\t* type {0} to exit the REPL".format(EXIT_CMD))
-    print("\t* type {0}")
+    print("\t* type {0} to get information of any expression".format(
+        INFO_CMD))
     print("")
 
 

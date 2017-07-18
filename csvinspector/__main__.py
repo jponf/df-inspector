@@ -27,7 +27,7 @@ DEFAULT_LOGGING_LEVEL = 'error'
 def main():
     args = parse_command_line_args(sys.argv[1:])
     set_up_logging(args)
-    repl.run()
+    repl.run_repl()
 
 
 # Setup
