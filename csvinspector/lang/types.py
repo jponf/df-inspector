@@ -104,7 +104,7 @@ class String(SExpression):
         return hash(self._value)
 
     def __repr__(self):
-        return "String({0})".format(self._value)
+        return '"{0}"'.format(self._value)
 
     def __str__(self):
         return str(self._value)

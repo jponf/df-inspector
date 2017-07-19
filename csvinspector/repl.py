@@ -62,11 +62,17 @@ def show_banner():
 
 def show_help():
     print("This interpreter uses a lisp like syntax, some expressions you")
-    print(" play with to get used to it are:")
+    print("can play with to get used to it are:")
     print("\t* Arithmetic operations:")
     print("\t  (+ 3 5), (* 5 -9), (/ 2 5.0), ...")
     print("\t* Bind values to names:")
     print("\t  (let a 3) (let b 5) (+ a b)")
+    print("")
+    print("Additionally the REPL supports the following special instructions:")
+    print("\t* {0}: exit the REPL".format(EXIT_CMD))
+    print("\t* {0}: prints information of any expression".format(INFO_CMD))
+    print("\t* {0}: prints this message".format(HELP_CMD))
+    print("\t* {0}: prints the system version".format(VERSION_CMD))
 
 
 def read_input():

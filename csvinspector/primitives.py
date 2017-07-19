@@ -152,6 +152,21 @@ class FunctionReadCSV(Function):
         return DataFrame.from_csv_file(csv_path.value)
 
 
+# Data frame indexing
+##############################################################################
+
+class FunctionGetColHeader(Function):
+
+    def apply(self, args: SExpression, env: 'Environment') -> SExpression:
+        check_exact_number_of_arguments(args, 1, self.name)
+        df = listops.nth(args, 0)
+        if not isinstance(df, DataFrame):
+            raise ArgumentsException("expected a DataFrame")
+
+        header = [String(h) for h in df.data_frame]
+        return listops.from_list(header)
+
+
 # Special symbols
 ##############################################################################
 
@@ -161,7 +176,7 @@ class SpecialLet(Special):
         check_exact_number_of_arguments(args, 2, self.name)
         sym = listops.nth(args, 0)
         if not isinstance(sym, Symbol):
-            raise ArgumentsException("{0}: first argument must be a symbol")
+            raise ArgumentsException("first argument must be a symbol")
 
         env.bind(sym, listops.nth(args, 1).eval(env))
         return SYM_NIL
@@ -194,36 +209,43 @@ def load_all(env: Environment):
     load_basic_functions(env)
     load_arithmetic_functions(env)
     load_data_frame_io_functions(env)
+    load_data_frame_indexing_functions(env)
     load_special_operations(env)
 
 
 def load_default_symbols(env: Environment):
     _log.debug("Loading default symbols: %s, %s and %s",
                str(SYM_NIL), str(SYM_FALSE), str(SYM_TRUE))
-    env.bind_global(SYM_NIL, SYM_NIL)
-    env.bind_global(SYM_FALSE, SYM_FALSE)
-    env.bind_global(SYM_TRUE, SYM_TRUE)
+    env.bind_global(SYM_NIL, SYM_NIL).lock()
+    env.bind_global(SYM_FALSE, SYM_FALSE).lock()
+    env.bind_global(SYM_TRUE, SYM_TRUE).lock()
 
 
 def load_basic_functions(env: Environment):
     _log.debug("Loading basic functions")
-    env.bind_global(Symbol("."), FunctionCompose("."))
-    env.bind_global(Symbol("print"), FunctionPrint("print"))
+    env.bind_global(Symbol("."), FunctionCompose(".")).lock()
+    env.bind_global(Symbol("print"), FunctionPrint("print")).lock()
 
 
 def load_arithmetic_functions(env: Environment):
     _log.debug("Loading arithmetic functions")
-    env.bind_global(Symbol("+"), FunctionAdd("+"))
-    env.bind_global(Symbol("-"), FunctionSubtract("-"))
-    env.bind_global(Symbol("*"), FunctionMultiply("*"))
-    env.bind_global(Symbol("/"), FunctionDivide("/"))
+    env.bind_global(Symbol("+"), FunctionAdd("+")).lock()
+    env.bind_global(Symbol("-"), FunctionSubtract("-")).lock()
+    env.bind_global(Symbol("*"), FunctionMultiply("*")).lock()
+    env.bind_global(Symbol("/"), FunctionDivide("/")).lock()
 
 
 def load_data_frame_io_functions(env: Environment):
     _log.debug("Loading data frame IO functions")
-    env.bind_global(Symbol("read_csv"), FunctionReadCSV("read_csv"))
+    env.bind_global(Symbol("read_csv"), FunctionReadCSV("read_csv")).lock()
+
+
+def load_data_frame_indexing_functions(env: Environment):
+    _log.debug("Loading data frame Indexing functions")
+    env.bind_global(Symbol("df_header"),
+                    FunctionGetColHeader("df_header")).lock()
 
 
 def load_special_operations(env: Environment):
     _log.debug("Loading special operations")
-    env.bind_global(Symbol("let"), SpecialLet("let"))
+    env.bind_global(Symbol("let"), SpecialLet("let")).lock()

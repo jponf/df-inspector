@@ -16,12 +16,15 @@ class NullEnvironment(Environment):
     """
 
     def __init__(self, child_env: Environment):
+        super().__init__()
         self._child_env = child_env
 
-    def bind(self, symbol: SExpression, value: SExpression) -> None:
-        raise NotImplementedError("NullEnvironment cannot bint symbols")
+    def bind(self, symbol: SExpression, value: SExpression) \
+            -> Environment.BindSymbolHandler:
+        raise NotImplementedError("NullEnvironment cannot bind symbols")
 
-    def bind_global(self, symbol: SExpression, value: SExpression) -> None:
+    def bind_global(self, symbol: SExpression, value: SExpression) \
+            -> Environment.BindSymbolHandler:
         return self._child_env.bind(symbol, value)
 
     def find(self, symbol: SExpression) -> SExpression:
@@ -35,14 +38,19 @@ class NullEnvironment(Environment):
 class NestedEnvironment(Environment):
 
     def __init__(self, parent_env: Environment=None):
+        super().__init__()
         self._parent_env = parent_env or NullEnvironment(self)
         self._mapped_symbols = {}
 
-    def bind(self, symbol: SExpression, value: SExpression) -> None:
+    def bind(self, symbol: SExpression, value: SExpression) \
+            -> Environment.BindSymbolHandler:
+        self.check_locked(symbol)
         self._mapped_symbols[symbol] = value
+        return Environment.BindSymbolHandler(self, symbol)
 
-    def bind_global(self, symbol: SExpression, value: SExpression) -> None:
-        self._parent_env.bind_global(symbol, value)
+    def bind_global(self, symbol: SExpression, value: SExpression) \
+            -> Environment.BindSymbolHandler:
+        return self._parent_env.bind_global(symbol, value)
 
     def find(self, symbol: SExpression) -> SExpression:
         if symbol in self._mapped_symbols:

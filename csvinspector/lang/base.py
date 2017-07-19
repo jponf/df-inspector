@@ -2,6 +2,8 @@
 
 import abc
 
+from .exceptions import SymbolLockedException
+
 
 # Interfaces
 ##############################################################################
@@ -38,12 +40,34 @@ class CallableSExpression(SExpression):
 
 class Environment(metaclass=abc.ABCMeta):
 
+    class BindSymbolHandler(object):
+
+        def __init__(self, env: 'Environment', symbol: SExpression):
+            self._env = env
+            self._sym = symbol
+
+        def lock(self):
+            self._env.lock(self._sym)
+
+    def __init__(self):
+        self._locked = set()
+
+    def lock(self, symbol: SExpression):
+        self._locked.add(symbol)
+
+    def check_locked(self, symbol: SExpression):
+        if symbol in self._locked:
+            raise SymbolLockedException("Symbol {0} cannot be defined".format(
+                symbol))
+
     @abc.abstractclassmethod
-    def bind(self, symbol: SExpression, value: SExpression) -> None:
+    def bind(self, symbol: SExpression, value: SExpression) \
+            -> BindSymbolHandler:
         raise NotImplementedError("Abstract method")
 
     @abc.abstractclassmethod
-    def bind_global(self, symbol: SExpression, value: SExpression) -> None:
+    def bind_global(self, symbol: SExpression, value: SExpression) \
+            -> BindSymbolHandler:
         raise NotImplementedError("Abstract method")
 
     @abc.abstractclassmethod
