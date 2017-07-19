@@ -27,6 +27,12 @@ def to_list(s_expr_list: SExpression, start=0, stop=None) -> [SExpression]:
     return list(iterator)
 
 
+def concat(s_expr_list1: SExpression, s_expr_list2: SExpression):
+    cc1 = typing.cast(ConsCell, s_expr_list1)
+    cc2 = typing.cast(ConsCell, s_expr_list2)
+    return from_list(to_list(cc1) + to_list(cc2))
+
+
 def iterate(s_expr_list: SExpression, start=0, stop=None):
     i, index = 0, s_expr_list
 

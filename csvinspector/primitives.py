@@ -181,8 +181,23 @@ class FunctionGetIndexCol(Function):
                        listops.iterate(args, start=0, stop=n_args-1)]
             n_df = last_arg.data_frame[last_arg.data_frame.columns[indexes]]
             return DataFrame(n_df)
+        elif isinstance(last_arg, Integer):
+            name = "{0} {1}...".format(self.name, " ".join(map(str, args)))
+            return FunctionPartialGetIndexCol(name, args)
+        else:
+            raise ArgumentsException("If no data frame is provided all"
+                                     " arguments must be integers")
 
-        raise EvaluationException("Partial specification not implemented")
+
+class FunctionPartialGetIndexCol(FunctionGetIndexCol):
+
+    def __init__(self, name, p_args):
+        super().__init__(name)
+        self._partial_args = p_args
+
+    def apply(self, args: SExpression, env: Environment) -> SExpression:
+        complete_args = listops.concat(self._partial_args, args)
+        return super().apply(complete_args, env)
 
 
 # Special symbols
