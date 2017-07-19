@@ -50,7 +50,7 @@ def new_string(text: str) -> Token:
 ##############################################################################
 
 _NUM_SIGNS = frozenset(['-', '+'])
-OPERANDS = frozenset(['=', '+', '-', '*', '/', '^', '.'])
+OPERANDS = frozenset(['=', '+', '-', '*', '/', '^', '.', '$'])
 
 
 class Lexer(metaclass=abc.ABCMeta):

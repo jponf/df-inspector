@@ -157,7 +157,7 @@ class FunctionReadCSV(Function):
 
 class FunctionGetColHeader(Function):
 
-    def apply(self, args: SExpression, env: 'Environment') -> SExpression:
+    def apply(self, args: SExpression, env: Environment) -> SExpression:
         check_exact_number_of_arguments(args, 1, self.name)
         df = listops.nth(args, 0)
         if not isinstance(df, DataFrame):
@@ -165,6 +165,24 @@ class FunctionGetColHeader(Function):
 
         header = [String(h) for h in df.data_frame]
         return listops.from_list(header)
+
+
+class FunctionGetIndexCol(Function):
+    """Function that extracts columns indexes from a data frame."""
+
+    def apply(self, args: SExpression, env: Environment) -> SExpression:
+        n_args = check_has_at_least_x_arguments(args, 1, self.name)
+        if not listops.is_list_of(args, Integer, n_args - 1):
+            raise ArgumentsException("First arguments must be integers")
+
+        last_arg = listops.nth(args, n_args - 1)
+        if isinstance(last_arg, DataFrame):
+            indexes = [s.value for s in
+                       listops.iterate(args, start=0, stop=n_args-1)]
+            n_df = last_arg.data_frame[last_arg.data_frame.columns[indexes]]
+            return DataFrame(n_df)
+
+        raise EvaluationException("Partial specification not implemented")
 
 
 # Special symbols
@@ -194,10 +212,20 @@ def match_types(args_list: SExpression, types: [type]):
 
 
 def check_exact_number_of_arguments(args, expected_len, symbol_name):
-    l = listops.length(args)
-    if l != expected_len:
-        raise ArgumentsException("{0} expected {1} but received {2}".format(
-            symbol_name, expected_len, l))
+    length = listops.length(args)
+    if length != expected_len:
+        raise ArgumentsException("{0} expected {1} but received {2}"
+                                 " arguments".format(
+                                  symbol_name, expected_len, length))
+
+
+def check_has_at_least_x_arguments(args, expected_len, symbol_name):
+    length = listops.length(args)
+    if length < expected_len:
+        raise ArgumentsException("{0} expected at least {1} but received {2}"
+                                 " arguments".format(
+                                  symbol_name, expected_len, length))
+    return length
 
 
 # Module functions
@@ -244,6 +272,10 @@ def load_data_frame_indexing_functions(env: Environment):
     _log.debug("Loading data frame Indexing functions")
     env.bind_global(Symbol("df_header"),
                     FunctionGetColHeader("df_header")).lock()
+
+    icol_fn = FunctionGetIndexCol("df_icol")
+    env.bind_global(Symbol("df_icol"), icol_fn).lock()
+    env.bind_global(Symbol("$"), icol_fn).lock()
 
 
 def load_special_operations(env: Environment):

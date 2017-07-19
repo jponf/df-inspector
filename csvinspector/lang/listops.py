@@ -22,12 +22,20 @@ def from_list(elements: [SExpression]):
     return head
 
 
-def iterate(s_expr_list: SExpression):
-    index = s_expr_list
-    while index != SYM_NIL:
-        cc_index = typing.cast(ConsCell, index)
-        index = cc_index.cdr
-        yield cc_index.car
+def to_list(s_expr_list: SExpression, start=0, stop=None) -> [SExpression]:
+    iterator = iterate(s_expr_list, start, stop)
+    return list(iterator)
+
+
+def iterate(s_expr_list: SExpression, start=0, stop=None):
+    i, index = 0, s_expr_list
+
+    while index != SYM_NIL and (stop is None or i < stop):
+        if i >= start:
+            cc_index = typing.cast(ConsCell, index)
+            index = cc_index.cdr
+            yield cc_index.car
+        i += 1
 
 
 def length(s_expr_list: SExpression) -> int:
@@ -45,8 +53,8 @@ def nth(s_expr_list: SExpression, pos: int) -> SExpression:
     return cur.car
 
 
-def is_list_of(s_expr_list: SExpression, klass: type) -> bool:
-    for car in iterate(s_expr_list):
+def is_list_of(s_expr_list: SExpression, klass: type, stop=None) -> bool:
+    for car in iterate(s_expr_list, start=0, stop=stop):
         if not isinstance(car, klass):
             return False
     return True
