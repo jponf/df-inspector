@@ -56,6 +56,15 @@ class FunctionPrint(Function):
 
 class FunctionAdd(Function):
 
+    @property
+    def info(self) -> str:
+        return "Arithmetic + function\n" \
+            "    (+ numbers...)\n\n" \
+            "This function receive as parameters a variadic amount\n" \
+            "of numbers and return the result of adding them.\n\n" \
+            "In case no parameter is provided it just returns the\n" \
+            "identity element 0."
+
     def apply(self, args: SExpression, env: Environment) -> SExpression:
         match_types(args, itertools.repeat(BaseNumber))
         base = Integer(0)
@@ -65,6 +74,16 @@ class FunctionAdd(Function):
 
 
 class FunctionSubtract(Function):
+
+    @property
+    def info(self) -> str:
+        return "Arithmetic - function\n" \
+               "    (- numbers...)\n\n" \
+               "This function receive as parameters a variadic amount\n" \
+               "of numbers and return the result of subtracting from the\n" \
+               "first one the rest of them.\n\n" \
+               "In case no parameter is provided it just returns the\n" \
+               "identity element 0."
 
     def apply(self, args: SExpression, env: Environment) -> SExpression:
         match_types(args, itertools.repeat(BaseNumber))
@@ -79,6 +98,15 @@ class FunctionSubtract(Function):
 
 class FunctionMultiply(Function):
 
+    @property
+    def info(self) -> str:
+        return "Arithmetic * function\n" \
+               "    (* numbers...)\n\n" \
+               "This function receive as parameters a variadic amount\n" \
+               "of numbers and return the result of multiplying them.\n\n" \
+               "In case no parameter is provided it just returns the\n" \
+               "identity element 1."
+
     def apply(self, args: SExpression, env: Environment) -> SExpression:
         match_types(args, itertools.repeat(BaseNumber))
         base = Integer(1)
@@ -88,6 +116,16 @@ class FunctionMultiply(Function):
 
 
 class FunctionDivide(Function):
+
+    @property
+    def info(self) -> str:
+        return "Arithmetic / function\n" \
+           "    (/ numbers...)\n\n" \
+           "This function receive as parameters a variadic amount\n" \
+           "of numbers and return the result of dividing the\n" \
+           "first one by rest of them.\n\n" \
+           "In case no parameter is provided it just returns the\n" \
+           "identity element 1."
 
     def apply(self, args: SExpression, env: Environment) -> SExpression:
         match_types(args, itertools.repeat(BaseNumber))

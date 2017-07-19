@@ -49,11 +49,11 @@ def run_repl(env: Environment=NestedEnvironment()):
 
 
 def show_banner():
-    print("Welcome to csv-inspector. Inspect csv files using a lisp like")
-    print("language")
+    print("Welcome to the df-inspector Read-Eval-Print-Loop.")
+    print("Inspect data files (csv, xls, xlsx, ...) effortlessly")
     print("")
-    print("Type the expression to evaluate:")
-    print("\t* waits for parentheses to balance or an empty line")
+    print("Tips:")
+    print("\t* the REPL waits for parentheses to balance or an empty line")
     print("\t* type {0} to exit the REPL".format(EXIT_CMD))
     print("\t* type {0} to get information of any expression".format(
         INFO_CMD))
