@@ -3,11 +3,11 @@
 import logging
 import readline  # TODO: Check if it works on Mac and Windows
 
-from . import primitives, VERSION_STR
+from . import VERSION_STR
 from .lang.base import SExpression
 from .lang.exceptions import EvaluationException
-from .lang.environment import Environment, NestedEnvironment
-from .lang.lexer import StrLexer, LexerException
+from .lang.environment import Environment
+from .lang.lexer import FileLexer, StrLexer, LexerException
 from .lang.parser import Parser, ParserException
 from .lang.symbol import SYM_NIL
 
@@ -26,9 +26,26 @@ _log = logging.getLogger('repl')
 #
 ##############################################################################
 
-def run_repl(env: Environment=NestedEnvironment()):
+def run_file(env: Environment, file_path: str):
+    try:
+        lexer = FileLexer(file_path=file_path)
+        p = Parser(lexer)
+        while p.has_next():
+            s_expr = p.parse_next()
+            _ = s_expr.eval(env)
+    except IOError as e:
+        _log.critical(e)
+    except (LexerException, ParserException) as e:
+        _log.error("Lexer/Parser error: %s", str(e))
+    except EvaluationException as e:
+        _log.error("Evaluation error: %s", str(e))
+
+
+#
+##############################################################################
+
+def run_repl(env: Environment):
     show_banner()
-    primitives.load_all(env)
 
     # TODO: Completion of language words
     readline.parse_and_bind('tab: complete')

@@ -208,3 +208,16 @@ class StrLexer(Lexer):
         self._index += 1
         self.current_character = self._input[self._index] \
             if self._index < len(self._input) else Lexer.EOF
+
+
+
+class FileLexer(Lexer):
+
+    def __init__(self, file_path: str):
+        super().__init__()
+        self._input = open(file_path, 'r')
+        self.consume()
+
+    def consume(self):
+        ch = self._input.read(1)
+        self.current_character = ch if ch else Lexer.EOF

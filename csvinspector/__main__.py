@@ -5,7 +5,10 @@ import argparse
 import logging
 import sys
 
-from csvinspector import VERSION_BRANCH, VERSION_STR, repl
+
+from csvinspector import primitives
+from csvinspector import VERSION_BRANCH, VERSION_STR, interpreter
+from csvinspector.lang.environment import NestedEnvironment
 
 
 #
@@ -27,7 +30,14 @@ DEFAULT_LOGGING_LEVEL = 'error'
 def main():
     args = parse_command_line_args(sys.argv[1:])
     set_up_logging(args)
-    repl.run_repl()
+
+    env = NestedEnvironment()
+    primitives.load_all(env)
+
+    if args.script is not None:
+        interpreter.run_file(env, args.script)
+    else:
+        interpreter.run_repl(env)
 
 
 # Setup
@@ -58,6 +68,9 @@ def parse_command_line_args(args):
     parser.add_argument('-v', '--verbosity', action='store',
                         choices=LOGGING_LEVELS.keys(),
                         default=DEFAULT_LOGGING_LEVEL)
+
+    parser.add_argument('script', nargs='?', type=str, default=None,
+                        help="Script file to execute")
 
     return parser.parse_args(args)
 

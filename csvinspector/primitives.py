@@ -47,6 +47,13 @@ class FunctionCompose(Function):
 class FunctionPrint(Function):
 
     def apply(self, args: SExpression, env: Environment) -> SExpression:
+        print(*list(listops.iterate(args)), end="")
+        return SYM_NIL
+
+
+class FunctionPrintLn(Function):
+
+    def apply(self, args: SExpression, env: Environment) -> SExpression:
         print(*list(listops.iterate(args)))
         return SYM_NIL
 
@@ -268,6 +275,7 @@ def load_basic_functions(env: Environment):
     _log.debug("Loading basic functions")
     env.bind_global(Symbol("."), FunctionCompose(".")).lock()
     env.bind_global(Symbol("print"), FunctionPrint("print")).lock()
+    env.bind_global(Symbol("println"), FunctionPrintLn("println")).lock()
 
 
 def load_arithmetic_functions(env: Environment):
